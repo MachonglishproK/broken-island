@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ブロークン島 入国管理局 | Broken Island Immigration</title>
+<meta name="description" content="英語が下手な人しか入国できない島。上手に話すと落ちます。/ The island you can only enter if your English is bad enough.">
+<!-- OGP: 公開後、YOUR-GITHUB-USERNAME を自分のものに置き換えてください -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="ブロークン島 入国管理局 | Broken Island Immigration">
+<meta property="og:description" content="英語が下手な人しか入国できない島。上手に話すと落ちます。/ Speak well, and you will fail.">
+<meta property="og:image" content="https://MachonglishproK.github.io/broken-island/og.png">
+<meta property="og:url" content="https://MachonglishproK.github.io/broken-island/">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  :root{
+    --sea:#0c2233; --sea2:#123249; --sand:#f7efdd; --sand2:#efe3c8;
+    --ink:#2b2317; --coral:#d64541; --teal:#2fa8a0; --gold:#c9a24b;
+  }
+  body{
+    font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+    background:
+      radial-gradient(1200px 500px at 50% -10%, #1b4a63 0%, transparent 60%),
+      var(--sea);
+    color:var(--sand); min-height:100vh;
+    display:flex; align-items:center; justify-content:center; padding:18px;
+  }
+  .app{ width:100%; max-width:620px; position:relative; }
+  .lang-toggle{
+    position:absolute; top:-6px; right:0; z-index:5;
+    background:rgba(255,255,255,.08); color:var(--sand);
+    border:1px solid rgba(255,255,255,.25); border-radius:20px;
+    padding:6px 14px; font-size:12px; cursor:pointer; font-family:inherit;
+  }
+  .screen{ display:none; animation:fadeIn .35s ease; }
+  .screen.active{ display:block; }
+  @keyframes fadeIn{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;} }
+
+  .bureau-head{ text-align:center; margin-bottom:18px; padding-top:26px; }
+  .bureau-head .flag{ font-size:44px; }
+  .bureau-head h1{ font-size:22px; letter-spacing:.18em; margin-top:6px; font-weight:800; }
+  .bureau-head .en{ font-size:10px; letter-spacing:.42em; color:#9db8c6; margin-top:6px; }
+  .card{
+    background:linear-gradient(175deg, var(--sand), var(--sand2));
+    color:var(--ink); border-radius:14px; padding:26px 24px;
+    box-shadow:0 18px 50px rgba(0,0,0,.45);
+    position:relative; overflow:hidden;
+  }
+  .card::before{
+    content:""; position:absolute; inset:0 0 auto 0; height:8px;
+    background:repeating-linear-gradient(45deg,var(--coral) 0 14px,var(--sand) 14px 28px,var(--teal) 28px 42px,var(--sand) 42px 56px);
+    opacity:.85;
+  }
+  .notice{
+    border:2px solid var(--ink); border-radius:8px; padding:14px 16px;
+    font-size:14px; line-height:1.9; background:rgba(255,255,255,.4); margin:14px 0 18px;
+  }
+  .notice b{ color:var(--coral); }
+  .notice small{ font-size:11px; color:#8a7d64; }
+  .stamp-note{ font-size:11px; color:#7a6f5c; text-align:center; margin-top:14px; line-height:1.7;}
+  label{ font-size:12px; font-weight:700; letter-spacing:.1em; display:block; margin-bottom:6px; color:#5a4f3d;}
+  input[type=text]{
+    width:100%; padding:12px 14px; font-size:16px; border:2px solid var(--ink);
+    border-radius:8px; background:#fffdf6; font-family:inherit;
+  }
+  .btn{
+    display:block; width:100%; padding:15px; margin-top:14px;
+    font-size:16px; font-weight:800; letter-spacing:.12em;
+    border:none; border-radius:10px; cursor:pointer; font-family:inherit;
+    transition:transform .08s ease, filter .15s ease;
+  }
+  .btn:active{ transform:scale(.97); }
+  .btn-primary{ background:var(--coral); color:#fff; box-shadow:0 6px 0 #a33330; }
+  .btn-primary:active{ box-shadow:0 2px 0 #a33330; }
+  .btn-ghost{ background:transparent; border:2px dashed #8a7d64; color:#6b5f49; font-size:13px; padding:11px; }
+  .btn-teal{ background:var(--teal); color:#fff; box-shadow:0 6px 0 #1f7a74; }
+  .demo-row{ display:flex; gap:10px; }
+  .demo-row .btn{ margin-top:10px; }
+
+  .officer{ display:flex; gap:12px; align-items:flex-start; margin-bottom:16px; }
+  .officer .face{
+    font-size:38px; background:#fffdf6; border:2px solid var(--ink);
+    border-radius:50%; width:62px; height:62px; flex:none;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .bubble{
+    background:#fffdf6; border:2px solid var(--ink); border-radius:12px;
+    padding:12px 14px; font-size:14px; line-height:1.8; position:relative; flex:1;
+  }
+  .bubble::before{
+    content:""; position:absolute; left:-9px; top:20px;
+    border:8px solid transparent; border-right-color:var(--ink);
+  }
+  .bubble .en{ display:block; font-size:11px; color:#8a7d64; letter-spacing:.06em; margin-top:4px; font-style:italic;}
+
+  .rec-zone{ text-align:center; padding:6px 0 2px; }
+  .ring-wrap{ position:relative; width:150px; height:150px; margin:8px auto 4px; }
+  .ring-wrap svg{ transform:rotate(-90deg); }
+  .ring-bg{ fill:none; stroke:#d8ccb2; stroke-width:9; }
+  .ring-fg{ fill:none; stroke:var(--coral); stroke-width:9; stroke-linecap:round; }
+  .ring-center{
+    position:absolute; inset:0; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:2px;
+  }
+  .ring-center .sec{ font-size:34px; font-weight:800; font-variant-numeric:tabular-nums; }
+  .ring-center .mic{ font-size:20px; }
+  .pulse{ animation:pulse 1.1s infinite; }
+  @keyframes pulse{ 0%,100%{transform:scale(1)} 50%{transform:scale(1.25)} }
+  #wave{ width:100%; height:56px; display:block; margin:10px 0 4px; }
+  .rec-hint{ font-size:12px; color:#7a6f5c; line-height:1.7; }
+  .error-box{
+    display:none; margin-top:12px; border:2px solid var(--coral); border-radius:8px;
+    background:#fdeceb; color:#8c2320; font-size:13px; padding:12px 14px; line-height:1.7;
+  }
+
+  .judging{ text-align:center; padding:36px 0 30px; }
+  .judging .glass{ font-size:54px; animation:wobble 1.2s infinite; display:inline-block; }
+  @keyframes wobble{ 0%,100%{transform:rotate(-8deg)} 50%{transform:rotate(10deg)} }
+  #judgeMsg{ margin-top:18px; font-size:15px; font-weight:700; min-height:1.6em; }
+  .dots::after{ content:""; animation:dots 1.2s steps(4) infinite; }
+  @keyframes dots{ 0%{content:""} 25%{content:"."} 50%{content:".."} 75%{content:"..."} }
+
+  .shake{ animation:shake .4s ease; }
+  @keyframes shake{
+    0%,100%{transform:none} 20%{transform:translate(-6px,2px) rotate(-.6deg)}
+    40%{transform:translate(5px,-3px) rotate(.5deg)} 60%{transform:translate(-4px,2px)}
+    80%{transform:translate(3px,-1px)}
+  }
+  .stamp{
+    margin:6px auto 14px; width:fit-content; padding:12px 26px;
+    border:6px double currentColor; border-radius:10px;
+    font-family:"Hiragino Mincho ProN","Yu Mincho",Georgia,serif;
+    font-weight:900; text-align:center; transform:rotate(-9deg);
+    animation:stampIn .5s cubic-bezier(.2,1.6,.4,1) both; opacity:.92;
+  }
+  @keyframes stampIn{
+    0%{ transform:scale(3.4) rotate(-28deg); opacity:0; }
+    55%{ transform:scale(.92) rotate(-9deg); opacity:1; }
+    75%{ transform:scale(1.05) rotate(-9deg); }
+    100%{ transform:scale(1) rotate(-9deg); opacity:.92; }
+  }
+  .stamp .big{ font-size:30px; letter-spacing:.1em; display:block; }
+  .stamp .small{ font-size:11px; letter-spacing:.3em; display:block; margin-top:3px; }
+  .stamp.denied{ color:var(--coral); }
+  .stamp.passed{ color:#1d6f9e; }
+  .verdict-msg{ text-align:center; font-size:14px; line-height:2; margin-bottom:16px; }
+  .verdict-msg b{ font-size:16px; }
+  .verdict-msg .sub{ font-size:12px; color:#8a7d64; font-style:italic; }
+
+  .passport{
+    border:3px solid var(--gold); border-radius:12px; padding:18px 18px 14px;
+    background:
+      radial-gradient(circle at 85% 12%, rgba(201,162,75,.25), transparent 45%),
+      #fbf6e8;
+    margin-bottom:16px; position:relative;
+  }
+  .passport .pp-head{ text-align:center; font-size:11px; letter-spacing:.34em; color:#8a6d2f; font-weight:800; }
+  .passport .pp-title{ text-align:center; font-size:17px; font-weight:900; margin:4px 0 12px; letter-spacing:.06em;}
+  .pp-grid{ display:grid; grid-template-columns:1fr 1fr; gap:8px 14px; font-size:13px; }
+  .pp-grid .k{ font-size:10px; color:#8a7d64; letter-spacing:.14em; }
+  .pp-grid .v{ font-weight:800; font-size:15px; }
+  .pp-seal{ position:absolute; right:12px; bottom:8px; font-size:34px; opacity:.55; transform:rotate(14deg); }
+  .passport.detention{ border-color:var(--coral); background:
+      radial-gradient(circle at 85% 12%, rgba(214,69,65,.14), transparent 45%), #fdf1ee; }
+  .passport.detention .pp-head{ color:var(--coral); }
+  .evidence{
+    border:2px dashed var(--coral); border-radius:8px; background:#fff7f6;
+    font-size:12.5px; line-height:1.9; padding:10px 14px; margin:10px 0 2px; color:#7a2a27;
+  }
+
+  .metrics{ margin:4px 0 16px; }
+  .metric{ margin-bottom:11px; }
+  .metric .row{ display:flex; justify-content:space-between; font-size:12px; font-weight:700; margin-bottom:4px; }
+  .metric .tag{ font-size:11px; padding:1px 8px; border-radius:20px; border:1.5px solid; }
+  .tag.good{ color:#1e7a4c; border-color:#1e7a4c; background:#e7f5ec; }
+  .tag.bad{ color:var(--coral); border-color:var(--coral); background:#fdeceb; }
+  .bar{ height:9px; background:#e2d7bd; border-radius:20px; overflow:hidden; }
+  .bar > div{ height:100%; border-radius:20px; width:0%; transition:width .9s cubic-bezier(.2,.8,.2,1); }
+  .transcript{
+    font-size:12px; color:#6b5f49; background:rgba(255,255,255,.5);
+    border-left:3px solid var(--gold); padding:8px 12px; margin-bottom:14px;
+    font-style:italic; line-height:1.7; word-break:break-word;
+  }
+  .copied{ filter:brightness(1.1); }
+  .footer{ text-align:center; font-size:10px; color:#57718a; margin-top:16px; letter-spacing:.2em; }
+</style>
+</head>
+<body>
+<div class="app">
+  <button class="lang-toggle" id="langBtn" onclick="switchLang()">🌐 English</button>
+
+  <!-- ============ 1. Landing ============ -->
+  <section class="screen active" id="screen-landing">
+    <div class="bureau-head">
+      <div class="flag">🏝️</div>
+      <h1 id="tLandingH1"></h1>
+      <div class="en" id="tLandingSub"></div>
+    </div>
+    <div class="card">
+      <div class="notice" id="tNotice"></div>
+      <label for="visitorName" id="tNameLabel"></label>
+      <input type="text" id="visitorName" maxlength="20" placeholder="">
+      <button class="btn btn-primary" id="tStartBtn" onclick="goExam()"></button>
+      <div class="demo-row">
+        <button class="btn btn-ghost" id="tDemoPass" onclick="runDemo('pass')"></button>
+        <button class="btn btn-ghost" id="tDemoDeny" onclick="runDemo('deny')"></button>
+        <button class="btn btn-ghost" id="tDemoArrest" onclick="runDemo('arrest')"></button>
+      </div>
+      <p class="stamp-note" id="tStampNote"></p>
+    </div>
+    <div class="footer">EST. 2026 — WHERE BROKEN ENGLISH IS A PASSPORT</div>
+  </section>
+
+  <!-- ============ 2. Exam ============ -->
+  <section class="screen" id="screen-exam">
+    <div class="bureau-head">
+      <div class="flag">🛂</div>
+      <h1 id="tExamH1"></h1>
+      <div class="en" id="tExamSub"></div>
+    </div>
+    <div class="card">
+      <div class="officer">
+        <div class="face">🦀</div>
+        <div class="bubble" id="officerLine"></div>
+      </div>
+      <div class="rec-zone">
+        <div class="ring-wrap">
+          <svg width="150" height="150">
+            <circle class="ring-bg" cx="75" cy="75" r="66"/>
+            <circle class="ring-fg" id="ringFg" cx="75" cy="75" r="66"
+                    stroke-dasharray="414.7" stroke-dashoffset="414.7"/>
+          </svg>
+          <div class="ring-center">
+            <div class="mic" id="micIcon">🎙</div>
+            <div class="sec" id="secLeft">30</div>
+          </div>
+        </div>
+        <canvas id="wave" width="560" height="56"></canvas>
+        <p class="rec-hint" id="recHint"></p>
+      </div>
+      <button class="btn btn-primary" id="recBtn" onclick="toggleRec()"></button>
+      <button class="btn btn-ghost i-back" onclick="show('screen-landing')"></button>
+      <div class="error-box" id="micError"></div>
+    </div>
+  </section>
+
+  <!-- ============ 3. Judging ============ -->
+  <section class="screen" id="screen-judging">
+    <div class="bureau-head">
+      <div class="flag">🛂</div>
+      <h1 id="tJudgingH1"></h1>
+      <div class="en" id="tJudgingSub"></div>
+    </div>
+    <div class="card">
+      <div class="judging">
+        <span class="glass">🔍</span>
+        <div id="judgeMsg" class="dots"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 4. Result ============ -->
+  <section class="screen" id="screen-result">
+    <div class="bureau-head">
+      <div class="flag" id="resultFlag">🛂</div>
+      <h1 id="resultTitle"></h1>
+      <div class="en" id="tResultSub"></div>
+    </div>
+    <div class="card" id="resultCard">
+      <div id="stampArea"></div>
+      <div class="verdict-msg" id="verdictMsg"></div>
+      <div id="passportArea"></div>
+      <div id="transcriptArea"></div>
+      <div class="metrics" id="metricsArea"></div>
+      <button class="btn btn-teal" id="copyBtn" onclick="copyResult()"></button>
+      <button class="btn btn-primary" id="retryBtn" onclick="goExam()"></button>
+      <button class="btn btn-ghost i-back" onclick="show('screen-landing')"></button>
+    </div>
+  </section>
+</div>
+
+<script>
+/* =========================================================
+   ブロークン島 入国審査 — 公開版 (JA/EN + analytics)
+   ========================================================= */
+
+/* ---------- 計測 (GoatCounter) ----------
+   pageviewは末尾のスクリプトタグが自動計測。
+   イベントは track('name') で event/name として記録される。 */
+function track(name){
+  try{
+    if (window.goatcounter && window.goatcounter.count)
+      window.goatcounter.count({ path: 'event/' + name, title: name, event: true });
+  }catch(_){}
+}
+
+/* ---------- i18n ---------- */
+const I18N = {
+ja: {
+  htmlTitle:'ブロークン島 入国管理局 | Broken Island Immigration',
+  langBtn:'🌐 English',
+  landingH1:'ブロークン島 入国管理局', landingSub:'BROKEN ISLAND IMMIGRATION BUREAU',
+  notice:'当島は、<b>英語が下手な方のみ</b>入国を許可しております。<br>流暢な方・発音の良い方・語彙の豊富な方は、誠に勝手ながら<b>お引き取り</b>いただいております。<br><small>※ 文法警察の入国は法律で禁止されています。</small>',
+  nameLabel:'入国カード — お名前（パスポートに記載されます）', namePh:'例）カケル',
+  startBtn:'🎙 入国審査を受ける',
+  demoPass:'演出を見る<br>（合格）', demoDeny:'演出を見る<br>（不合格）', demoArrest:'演出を見る<br>（逮捕）',
+  stampNote:'審査は英語の自己紹介（最長30秒）で行われます。<br><b style="color:var(--coral)">上手に話すと落ちます。</b>',
+  examH1:'審 査 室', examSub:'EXAMINATION ROOM No.7',
+  officerAsk:'英語で30秒、自己紹介をしてください。<br>止まっても、詰まっても、間違えても結構。むしろ加点です。<span class="en">"PLEASE SPEAK. WHO ARE YOU? NO PERFECT ENGLISH, PLEASE."</span>',
+  recHintIdle:'下のボタンで録音開始。5秒以上話したら審査に進めます。',
+  recHintRec:'録音中… 英語で自己紹介をどうぞ。詰まってOK。',
+  recStart:'録音を開始する', recStop:'話し終えた（審査へ）',
+  backBtn:'窓口に戻る',
+  micErr:'🦀「マイクが使えないようです。」<br>X(Twitter)アプリ内ブラウザ等ではマイクがブロックされます。SafariかChromeで開き直すか、窓口の「演出を見る」をお試しください。',
+  tooShort:'🦀「短すぎます。審査には5秒以上の<b>勇気</b>が必要です。」もう一度どうぞ。',
+  judgingH1:'鑑 定 中', judgingSub:'EXAMINING YOUR BROKENNESS',
+  judgeLines:['発音の粗さを鑑定中','語彙のショボさを確認中','文法の壊れ具合を計測中','下手偽装罪データベースと照合中'],
+  arrestWait:'……待ってください。逮捕状を請求しています',
+  resultSub:'OFFICIAL DECISION',
+  titlePass:'入 国 許 可', titleDeny:'入 国 拒 否', titleArrest:'逮 捕',
+  stampPassBig:'WELCOME', stampPassSmall:'TO BROKEN ISLAND',
+  stampDenyBig:'ENTRY DENIED', stampDenySmall:'TOO FLUENT / 上手すぎ',
+  stampArrestBig:'ARRESTED', stampArrestSmall:'下手偽装罪 / FAKE BROKEN',
+  verdictPass:'🦀「おめでとうございます。<b>あなたの英語は十分に下手です。</b>」<br><span class="sub">"YOUR ENGLISH IS BEAUTIFUL BROKEN. COME IN."</span>',
+  verdictDeny:'🦀「残念ながら、<b>あなたの英語は上手すぎます。</b>」<br><span class="sub">"YOU ARE TOO GOOD. GO HOME."</span><br><span style="font-size:12px">悔しいですか？その気持ち、島では一生わかってもらえません。</span>',
+  verdictArrest:'🦀「ゆっくり話せば誤魔化せると思いましたね。<b>発音が綺麗すぎます。</b>」<br><span class="sub">"YOU ARE UNDER ARREST FOR FAKING BROKEN ENGLISH."</span>',
+  ppHead:'BROKEN ISLAND PASSPORT', ppTitle:'英語が下手である証明書',
+  kName:'NAME / 氏名', kRank:'RANK / 称号', kBroken:'BROKENNESS / 下手度',
+  kResident:'RESIDENT No. / 島民番号', kIssued:'ISSUED / 発行日', kValid:'VALID / 有効期限',
+  validVal:'上達するまで', ptSuffix:' 点',
+  ranks:{
+    legend:['伝説級ブロークン','もはや芸術です。島の宝として大切にされます。'],
+    certified:['正統派ブロークン','安心してください、いい感じに壊れています。最高です。'],
+    barely:['ギリギリ入国','時々お上手なのが審査官は気になりました。油断しないでください。']
+  },
+  detHead:'DETENTION NOTICE', detTitle:'勾 留 通 知 書',
+  kSuspect:'SUSPECT / 被疑者', kCharge:'CHARGE / 罪状', kLaw:'LAW / 根拠法',
+  kSentence:'SENTENCE / 刑罰', kParole:'PAROLE / 保護観察',
+  chargeVal:'下手偽装罪',
+  lawVal:'ブロークン島刑法 第1条「何人も、下手なフリをして入国してはならない」',
+  sentenceVal:'ネイティブ収容棟にて<br>強制英会話（3日）',
+  paroleVal:'釈放後、初心者への<br>先生労役を命ずる',
+  evidence:(w,c)=>`🔍 <b>証拠</b>: 話速はわずか ${w} wpm。それに対し発音明瞭度 ${c}%。<b>本物の初心者は、遅くて、かつ壊れています。</b>あなたは遅いのに綺麗すぎました。以上。`,
+  earOnlyNote:'🦀 この端末では文字起こしができなかったため、<b>耳だけで審査</b>しました（沈黙と途切れの美しさを評価）。',
+  transcriptLabel:'審査記録',
+  mSpeed:'話速', mSilence:'沈黙・詰まり', mClarity:'発音明瞭度', mVocab:'意識高い語彙',
+  nSpeed:(w)=>`${w} wpm`, nSilence:(p)=>`${p}%が沈黙`, nClarity:'聞き取りやすさ', nVocab:(c)=>`検出 ${c} 語`,
+  tagGood:'良い下手さ', tagBad:'危険',
+  copyBtn:'📋 結果をコピーしてSNSで叫ぶ', copied:'✅ コピーしました。叫んできてください',
+  retryBtn:'もう一度審査を受ける',
+  sharePass:(r)=>`🏝️ 英語が下手すぎて「ブロークン島」への入国を許可されました。称号:${r.rank}(下手度${r.heta}点)。この島、英語が上手いと入れないらしい。 #ブロークン島 ${location.href}`,
+  shareDeny:(r)=>`⛔ 英語が上手すぎて「ブロークン島」への入国を拒否されました(流暢度${r.fluency}点)。英語力で落ちる入国審査、初めてなんだが。 #ブロークン島 ${location.href}`,
+  shareArrest:()=>`⛓️ 英会話アプリで下手なフリをしたら「下手偽装罪」で逮捕されました。刑罰はネイティブとの強制英会話3日らしい。 #ブロークン島 ${location.href}`
+},
+en: {
+  htmlTitle:'Broken Island Immigration | The island for bad English only',
+  langBtn:'🌐 日本語',
+  landingH1:'BROKEN ISLAND', landingSub:'IMMIGRATION BUREAU',
+  notice:'This island grants entry <b>only to people who are bad at English</b>.<br>Fluent speakers, clear pronouncers and vocabulary show-offs will be <b>politely turned away</b>.<br><small>* Grammar police are banned by law.</small>',
+  nameLabel:'Entry card — your name (printed on your passport)', namePh:'e.g. Kakeru',
+  startBtn:'🎙 Take the entry exam',
+  demoPass:'Demo<br>(approved)', demoDeny:'Demo<br>(denied)', demoArrest:'Demo<br>(arrested)',
+  stampNote:'The exam is a self-introduction in English (max 30 sec).<br><b style="color:var(--coral)">Speak well, and you will fail.</b>',
+  examH1:'EXAMINATION', examSub:'ROOM No.7',
+  officerAsk:'Please introduce yourself in English — 30 seconds.<br>Pausing, stumbling and mistakes are welcome. They count in your favor.<span class="en">Officer Crab is also not good at English. No worry.</span>',
+  recHintIdle:'Press the button to start. Speak at least 5 seconds to be examined.',
+  recHintRec:'Recording… introduce yourself in English. Stumbling is fine.',
+  recStart:'Start recording', recStop:'Done talking (judge me)',
+  backBtn:'Back to the front desk',
+  micErr:'🦀 "Microphone unavailable." In-app browsers (X/Twitter etc.) often block the mic. Open this page in Chrome or Safari, or try the demo buttons at the front desk.',
+  tooShort:'🦀 "Too short. The exam requires at least 5 seconds of <b>courage</b>." Try again.',
+  judgingH1:'EXAMINING', judgingSub:'MEASURING YOUR BROKENNESS',
+  judgeLines:['Assessing roughness of pronunciation','Verifying poorness of vocabulary','Measuring brokenness of grammar','Cross-checking the Fake-Broken offender database'],
+  arrestWait:'…Wait. We are requesting an arrest warrant',
+  resultSub:'OFFICIAL DECISION',
+  titlePass:'ENTRY APPROVED', titleDeny:'ENTRY DENIED', titleArrest:'ARRESTED',
+  stampPassBig:'WELCOME', stampPassSmall:'TO BROKEN ISLAND',
+  stampDenyBig:'ENTRY DENIED', stampDenySmall:'TOO FLUENT',
+  stampArrestBig:'ARRESTED', stampArrestSmall:'FAKING BROKEN ENGLISH',
+  verdictPass:'🦀 "Congratulations. <b>Your English is bad enough.</b>"<br><span class="sub">"YOUR ENGLISH IS BEAUTIFUL BROKEN. COME IN."</span>',
+  verdictDeny:'🦀 "Unfortunately, <b>your English is too good.</b>"<br><span class="sub">"YOU ARE TOO GOOD. GO HOME."</span><br><span style="font-size:12px">Native speaker? We are very sorry for your perfect life.</span>',
+  verdictArrest:'🦀 "You thought speaking slowly would fool us. <b>Your pronunciation is too clean.</b>"<br><span class="sub">"YOU ARE UNDER ARREST FOR FAKING BROKEN ENGLISH."</span>',
+  ppHead:'BROKEN ISLAND PASSPORT', ppTitle:'Certificate of Broken English',
+  kName:'NAME', kRank:'RANK', kBroken:'BROKENNESS',
+  kResident:'RESIDENT No.', kIssued:'ISSUED', kValid:'VALID',
+  validVal:'Until you improve', ptSuffix:' pts',
+  ranks:{
+    legend:['Legendary Broken','This is art. The island will treasure you.'],
+    certified:['Certified Broken','Relax — you are beautifully broken. Perfect.'],
+    barely:['Barely Broken Enough','The officer noticed occasional competence. Stay vigilant.']
+  },
+  detHead:'DETENTION NOTICE', detTitle:'NOTICE OF DETENTION',
+  kSuspect:'SUSPECT', kCharge:'CHARGE', kLaw:'LAW',
+  kSentence:'SENTENCE', kParole:'PAROLE',
+  chargeVal:'Faking Broken English',
+  lawVal:'Broken Island Penal Code, Art. 1 — "No person shall enter this island pretending to be bad at English."',
+  sentenceVal:'3 days of forced conversation<br>with native speakers',
+  paroleVal:'Teaching duty for beginners<br>after release',
+  evidence:(w,c)=>`🔍 <b>Evidence</b>: only ${w} wpm — yet ${c}% pronunciation clarity. <b>Real beginners are slow AND broken.</b> You were slow and clean. Case closed.`,
+  earOnlyNote:'🦀 Speech-to-text was unavailable on this device, so you were judged <b>by ear only</b> (we graded the beauty of your silences).',
+  transcriptLabel:'Exam record',
+  mSpeed:'Speed', mSilence:'Silence & stumbles', mClarity:'Pronunciation clarity', mVocab:'Fancy vocabulary',
+  nSpeed:(w)=>`${w} wpm`, nSilence:(p)=>`${p}% silence`, nClarity:'clarity', nVocab:(c)=>`${c} words detected`,
+  tagGood:'Nicely broken', tagBad:'Danger',
+  copyBtn:'📋 Copy result & shout on social media', copied:'✅ Copied. Go shout.',
+  retryBtn:'Take the exam again',
+  sharePass:(r)=>`🏝️ My English is officially bad enough to enter "Broken Island" — rank: ${r.rank} (${r.heta} pts broken). An island you can't enter if your English is too good. #BrokenIsland ${location.href}`,
+  shareDeny:(r)=>`⛔ I just got DENIED ENTRY to "Broken Island" for being too fluent (fluency ${r.fluency}). First time my English was a problem for being too good. #BrokenIsland ${location.href}`,
+  shareArrest:()=>`⛓️ I faked bad English and got ARRESTED for "Faking Broken English". Sentence: 3 days of forced conversation with native speakers. #BrokenIsland ${location.href}`
+}
+};
+
+let LANG = ((navigator.language || 'en').toLowerCase().indexOf('ja') === 0) ? 'ja' : 'en';
+function t(key){ return I18N[LANG][key]; }
+
+function applyLang(){
+  const d = I18N[LANG];
+  document.documentElement.lang = LANG;
+  document.title = d.htmlTitle;
+  document.getElementById('langBtn').textContent = d.langBtn;
+  const set = (id, key) => { document.getElementById(id).innerHTML = d[key]; };
+  set('tLandingH1','landingH1'); set('tLandingSub','landingSub');
+  set('tNotice','notice'); set('tNameLabel','nameLabel');
+  document.getElementById('visitorName').placeholder = d.namePh;
+  set('tStartBtn','startBtn');
+  set('tDemoPass','demoPass'); set('tDemoDeny','demoDeny'); set('tDemoArrest','demoArrest');
+  set('tStampNote','stampNote');
+  set('tExamH1','examH1'); set('tExamSub','examSub');
+  set('officerLine','officerAsk');
+  set('recHint','recHintIdle');
+  document.getElementById('recBtn').innerHTML = recording ? d.recStop : d.recStart;
+  set('tJudgingH1','judgingH1'); set('tJudgingSub','judgingSub');
+  set('tResultSub','resultSub');
+  set('copyBtn','copyBtn'); set('retryBtn','retryBtn');
+  document.querySelectorAll('.i-back').forEach(b => { b.innerHTML = d.backBtn; });
+}
+function switchLang(){
+  LANG = (LANG === 'ja') ? 'en' : 'ja';
+  applyLang();
+  track('lang-' + LANG);
+}
+
+/* ---------- state ---------- */
+const MAX_SEC = 30, MIN_SEC = 5;
+const RING_LEN = 414.7;
+let mediaStream = null, audioCtx = null, analyser = null;
+let recognition = null;
+let recording = false, startTs = 0, rafId = null;
+let rmsFrames = [], transcript = '', confidences = [];
+let lastResult = null;
+
+/* ---------- navigation ---------- */
+function show(id){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function goExam(){
+  resetExamUI();
+  show('screen-exam');
+}
+
+/* ---------- recording ---------- */
+function resetExamUI(){
+  stopEverything();
+  rmsFrames = []; transcript = ''; confidences = [];
+  document.getElementById('secLeft').textContent = MAX_SEC;
+  document.getElementById('ringFg').style.strokeDashoffset = RING_LEN;
+  document.getElementById('recBtn').innerHTML = t('recStart');
+  document.getElementById('recHint').innerHTML = t('recHintIdle');
+  document.getElementById('micIcon').classList.remove('pulse');
+  document.getElementById('micError').style.display = 'none';
+  const cv = document.getElementById('wave');
+  cv.getContext('2d').clearRect(0,0,cv.width,cv.height);
+}
+
+async function toggleRec(){
+  if (recording) { finishRecording(); return; }
+  try {
+    mediaStream = await navigator.mediaDevices.getUserMedia({ audio:true });
+  } catch(e){
+    const box = document.getElementById('micError');
+    box.style.display = 'block';
+    box.innerHTML = t('micErr');
+    track('mic-error');
+    return;
+  }
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const src = audioCtx.createMediaStreamSource(mediaStream);
+  analyser = audioCtx.createAnalyser();
+  analyser.fftSize = 1024;
+  src.connect(analyser);
+
+  startRecognition();
+
+  recording = true;
+  startTs = performance.now();
+  rmsFrames = []; transcript = ''; confidences = [];
+  document.getElementById('recBtn').innerHTML = t('recStop');
+  document.getElementById('micIcon').classList.add('pulse');
+  document.getElementById('recHint').innerHTML = t('recHintRec');
+  track('exam-start');
+  loop();
+}
+
+function startRecognition(){
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { recognition = null; return; }
+  recognition = new SR();
+  recognition.lang = 'en-US';
+  recognition.continuous = true;
+  recognition.interimResults = false;
+  recognition.onresult = (ev) => {
+    for (let i = ev.resultIndex; i < ev.results.length; i++){
+      if (ev.results[i].isFinal){
+        transcript += ev.results[i][0].transcript + ' ';
+        if (typeof ev.results[i][0].confidence === 'number' && ev.results[i][0].confidence > 0)
+          confidences.push(ev.results[i][0].confidence);
+      }
+    }
+  };
+  recognition.onend = () => { if (recording) { try{ recognition.start(); }catch(_){} } };
+  recognition.onerror = () => {};
+  try { recognition.start(); } catch(_){}
+}
+
+function loop(){
+  if (!recording) return;
+  const elapsed = (performance.now() - startTs) / 1000;
+  const left = Math.max(0, MAX_SEC - elapsed);
+  document.getElementById('secLeft').textContent = Math.ceil(left);
+  document.getElementById('ringFg').style.strokeDashoffset = RING_LEN * (left / MAX_SEC);
+
+  const buf = new Uint8Array(analyser.fftSize);
+  analyser.getByteTimeDomainData(buf);
+  let sum = 0;
+  for (let i = 0; i < buf.length; i++){ const v = (buf[i]-128)/128; sum += v*v; }
+  const rms = Math.sqrt(sum / buf.length);
+  rmsFrames.push(rms);
+  drawWave();
+
+  if (left <= 0){ finishRecording(); return; }
+  rafId = requestAnimationFrame(loop);
+}
+
+function drawWave(){
+  const cv = document.getElementById('wave'), ctx = cv.getContext('2d');
+  ctx.clearRect(0,0,cv.width,cv.height);
+  const N = 90, w = cv.width / N;
+  const startI = Math.max(0, rmsFrames.length - N);
+  for (let i = startI; i < rmsFrames.length; i++){
+    const h = Math.min(1, rmsFrames[i]*6) * cv.height;
+    const x = (i - startI) * w;
+    ctx.fillStyle = rmsFrames[i] > 0.03 ? '#d64541' : '#c9bd9f';
+    ctx.fillRect(x, (cv.height - h)/2, w*0.6, Math.max(2,h));
+  }
+}
+
+function stopEverything(){
+  recording = false;
+  if (rafId) cancelAnimationFrame(rafId);
+  if (recognition){ try{ recognition.onend = null; recognition.stop(); }catch(_){} recognition = null; }
+  if (mediaStream){ mediaStream.getTracks().forEach(tr => tr.stop()); mediaStream = null; }
+  if (audioCtx){ try{ audioCtx.close(); }catch(_){} audioCtx = null; }
+}
+
+function finishRecording(){
+  const dur = (performance.now() - startTs) / 1000;
+  stopEverything();
+  document.getElementById('micIcon').classList.remove('pulse');
+  if (dur < MIN_SEC){
+    const box = document.getElementById('micError');
+    box.style.display = 'block';
+    box.innerHTML = t('tooShort');
+    document.getElementById('recBtn').innerHTML = t('recStart');
+    return;
+  }
+  track('exam-complete');
+  show('screen-judging');
+  playJudging(() => {
+    const m = computeMetrics(dur);
+    lastResult = judge(m);
+    if (lastResult.arrested){
+      const el = document.getElementById('judgeMsg');
+      el.style.color = '#d64541';
+      el.textContent = t('arrestWait');
+      setTimeout(() => { el.style.color = ''; renderResult(lastResult); }, 1500);
+    } else {
+      renderResult(lastResult);
+    }
+  });
+}
+
+/* ---------- judging animation ---------- */
+function playJudging(done){
+  let i = 0;
+  const lines = t('judgeLines');
+  const el = document.getElementById('judgeMsg');
+  el.textContent = lines[0];
+  const iv = setInterval(() => {
+    i++;
+    if (i >= lines.length){ clearInterval(iv); done(); return; }
+    el.textContent = lines[i];
+  }, 950);
+}
+
+/* ---------- scoring ---------- */
+function computeMetrics(dur){
+  const peak = Math.max(0.02, ...rmsFrames);
+  const thresh = Math.max(0.012, peak * 0.18);
+  const speaking = rmsFrames.filter(r => r > thresh).length;
+  const pauseRatio = rmsFrames.length ? 1 - speaking / rmsFrames.length : 1;
+
+  const words = transcript.trim() ? transcript.trim().split(/\s+/) : [];
+  const wpm = words.length / dur * 60;
+  const avgLen = words.length ? words.join('').length / words.length : 0;
+  const ADV = ['opportunity','experience','definitely','absolutely','particularly','environment',
+    'communicate','communication','international','professional','organization','development',
+    'nevertheless','furthermore','although','regarding','appreciate','enthusiastic','passionate',
+    'responsible','collaborate','perspective','essentially','specifically','currently'];
+  const lower = transcript.toLowerCase();
+  const advCount = ADV.filter(w => lower.includes(w)).length;
+  const clarity = confidences.length
+    ? confidences.reduce((a,b)=>a+b,0) / confidences.length * 100
+    : null;
+  const asrWorked = words.length >= 5;
+
+  return { dur, pauseRatio, words: words.length, wpm, avgLen, advCount, clarity, asrWorked,
+           transcript: transcript.trim() };
+}
+
+function judge(m){
+  let fluency, earOnly = false;
+  if (m.asrWorked){
+    const wpmScore  = Math.min(100, m.wpm / 140 * 100);
+    const vocabScore = Math.min(100, m.advCount * 18 + Math.max(0,(m.avgLen - 3.4)) * 28);
+    const flowScore = Math.max(0, 100 * (1 - m.pauseRatio * 1.6));
+    const clarityScore = m.clarity === null ? 65 : m.clarity;
+    fluency = 0.34*wpmScore + 0.27*clarityScore + 0.19*vocabScore + 0.20*flowScore;
+  } else {
+    earOnly = true;
+    fluency = Math.max(5, Math.min(90, 95 * (1 - m.pauseRatio * 1.7)));
+  }
+  fluency = Math.round(Math.max(0, Math.min(100, fluency)));
+  const heta = 100 - fluency;
+
+  // Fake-Broken offense: slow but too clean
+  const arrested = m.asrWorked && m.wpm > 0 && m.wpm < 85 &&
+    ((m.clarity !== null && m.clarity >= 80) || m.advCount >= 3);
+
+  const pass = !arrested && fluency < 60;
+  let rankKey = null;
+  if (heta >= 80) rankKey = 'legend';
+  else if (heta >= 60) rankKey = 'certified';
+  else if (heta >= 40) rankKey = 'barely';
+  return { ...m, fluency, heta, pass, arrested, rankKey, earOnly, demo:false };
+}
+
+/* ---------- demo ---------- */
+function runDemo(kind){
+  track('demo-' + kind);
+  show('screen-judging');
+  playJudging(() => {
+    if (kind === 'pass'){
+      lastResult = { fluency:28, heta:72, pass:true, arrested:false, rankKey:'certified',
+        wpm:52, pauseRatio:0.46, advCount:0, clarity:41, asrWorked:true, earOnly:false, demo:true,
+        transcript:"Hello... my name is... eto... I like... sleeping. Thank you." };
+      renderResult(lastResult);
+    } else if (kind === 'deny'){
+      lastResult = { fluency:84, heta:16, pass:false, arrested:false, rankKey:null,
+        wpm:138, pauseRatio:0.08, advCount:4, clarity:93, asrWorked:true, earOnly:false, demo:true,
+        transcript:"Hi, I'm absolutely thrilled to introduce myself. I've spent years developing international communication skills..." };
+      renderResult(lastResult);
+    } else {
+      lastResult = { fluency:44, heta:56, pass:false, arrested:true, rankKey:null,
+        wpm:48, pauseRatio:0.42, advCount:2, clarity:92, asrWorked:true, earOnly:false, demo:true,
+        transcript:"Hello. My name is... um... I am very bad at English. I cannot speak English well. Sorry." };
+      const el = document.getElementById('judgeMsg');
+      el.style.color = '#d64541';
+      el.textContent = t('arrestWait');
+      setTimeout(() => { el.style.color = ''; renderResult(lastResult); }, 1500);
+    }
+  });
+}
+
+/* ---------- result rendering ---------- */
+function metricRow(label, valuePct, islandGood, note){
+  const tag = islandGood
+    ? `<span class="tag good">${t('tagGood')}</span>`
+    : `<span class="tag bad">${t('tagBad')}</span>`;
+  const color = islandGood ? '#2fa8a0' : '#d64541';
+  return `<div class="metric">
+    <div class="row"><span>${label} <small style="color:#8a7d64;font-weight:400">${note}</small></span>${tag}</div>
+    <div class="bar"><div style="background:${color}" data-w="${Math.round(valuePct)}"></div></div>
+  </div>`;
+}
+
+function renderResult(r){
+  const d = I18N[LANG];
+  const name = (document.getElementById('visitorName').value.trim() || 'NO NAME').toUpperCase();
+  const flag = document.getElementById('resultFlag');
+  const title = document.getElementById('resultTitle');
+  const stampArea = document.getElementById('stampArea');
+  const verdict = document.getElementById('verdictMsg');
+  const ppArea = document.getElementById('passportArea');
+  const trArea = document.getElementById('transcriptArea');
+  const metrics = document.getElementById('metricsArea');
+  const rank = r.rankKey ? d.ranks[r.rankKey] : null;
+  r.rank = rank ? rank[0] : null;
+
+  if (!r.demo){
+    track(r.arrested ? 'result-arrest' : (r.pass ? 'result-pass' : 'result-deny'));
+  }
+
+  if (r.arrested){
+    flag.textContent = '🚔';
+    title.textContent = d.titleArrest;
+    stampArea.innerHTML = `<div class="stamp denied"><span class="big">${d.stampArrestBig}</span><span class="small">${d.stampArrestSmall}</span></div>`;
+    verdict.innerHTML = d.verdictArrest;
+    ppArea.innerHTML = `<div class="passport detention">
+      <div class="pp-head">${d.detHead}</div>
+      <div class="pp-title">${d.detTitle}</div>
+      <div class="pp-grid">
+        <div><div class="k">${d.kSuspect}</div><div class="v">${name}</div></div>
+        <div><div class="k">${d.kCharge}</div><div class="v">${d.chargeVal}</div></div>
+        <div style="grid-column:1/3"><div class="k">${d.kLaw}</div><div class="v" style="font-size:13px">${d.lawVal}</div></div>
+        <div><div class="k">${d.kSentence}</div><div class="v" style="font-size:13px">${d.sentenceVal}</div></div>
+        <div><div class="k">${d.kParole}</div><div class="v" style="font-size:13px">${d.paroleVal}</div></div>
+      </div>
+      <div class="pp-seal">⛓️</div>
+    </div>
+    <div class="evidence">${d.evidence(Math.round(r.wpm), Math.round(r.clarity===null?0:r.clarity))}</div>`;
+  } else if (r.pass){
+    flag.textContent = '🏝️';
+    title.textContent = d.titlePass;
+    stampArea.innerHTML = `<div class="stamp passed"><span class="big">${d.stampPassBig}</span><span class="small">${d.stampPassSmall}</span></div>`;
+    verdict.innerHTML = d.verdictPass;
+    const no = 'BRK-' + String(Math.floor(Math.random()*90000)+10000);
+    const today = new Date();
+    const dateStr = today.getFullYear() + '.' + String(today.getMonth()+1).padStart(2,'0') + '.' + String(today.getDate()).padStart(2,'0');
+    ppArea.innerHTML = `<div class="passport">
+      <div class="pp-head">${d.ppHead}</div>
+      <div class="pp-title">${d.ppTitle}</div>
+      <div class="pp-grid">
+        <div><div class="k">${d.kName}</div><div class="v">${name}</div></div>
+        <div><div class="k">${d.kRank}</div><div class="v">${rank[0]}</div></div>
+        <div><div class="k">${d.kBroken}</div><div class="v">${r.heta}${d.ptSuffix}</div></div>
+        <div><div class="k">${d.kResident}</div><div class="v">${no}</div></div>
+        <div><div class="k">${d.kIssued}</div><div class="v">${dateStr}</div></div>
+        <div><div class="k">${d.kValid}</div><div class="v">${d.validVal}</div></div>
+      </div>
+      <div class="pp-seal">🦀</div>
+    </div>
+    <div class="verdict-msg" style="margin-top:-6px">${rank[1]}</div>`;
+  } else {
+    flag.textContent = '⛔';
+    title.textContent = d.titleDeny;
+    stampArea.innerHTML = `<div class="stamp denied"><span class="big">${d.stampDenyBig}</span><span class="small">${d.stampDenySmall}</span></div>`;
+    verdict.innerHTML = d.verdictDeny;
+    ppArea.innerHTML = '';
+  }
+
+  trArea.innerHTML = r.transcript
+    ? `<div class="transcript">${d.transcriptLabel}: “${r.transcript.slice(0,180)}${r.transcript.length>180?'…':''}”</div>` : '';
+
+  let mh = '';
+  if (r.earOnly){
+    mh += `<div class="transcript">${d.earOnlyNote}</div>`;
+  }
+  mh += metricRow(d.mSpeed, Math.min(100, (r.wpm||0)/140*100), (r.wpm||0) < 85, d.nSpeed(Math.round(r.wpm||0)));
+  mh += metricRow(d.mSilence, (r.pauseRatio||0)*100, (r.pauseRatio||0) > 0.3, d.nSilence(Math.round((r.pauseRatio||0)*100)));
+  if (r.asrWorked){
+    mh += metricRow(d.mClarity, r.clarity===null?65:r.clarity, (r.clarity===null?65:r.clarity) < 70, d.nClarity);
+    mh += metricRow(d.mVocab, Math.min(100,(r.advCount||0)*25), (r.advCount||0) < 2, d.nVocab(r.advCount||0));
+  }
+  metrics.innerHTML = mh;
+  document.getElementById('copyBtn').innerHTML = d.copyBtn;
+
+  show('screen-result');
+  const card = document.getElementById('resultCard');
+  card.classList.remove('shake'); void card.offsetWidth;
+  setTimeout(() => card.classList.add('shake'), 280);
+  setTimeout(() => {
+    metrics.querySelectorAll('.bar > div').forEach(b => { b.style.width = b.dataset.w + '%'; });
+  }, 350);
+}
+
+/* ---------- share ---------- */
+function copyResult(){
+  if (!lastResult) return;
+  const r = lastResult, d = I18N[LANG];
+  const text = r.arrested ? d.shareArrest() : (r.pass ? d.sharePass(r) : d.shareDeny(r));
+  track('share-copy');
+  const btn = document.getElementById('copyBtn');
+  const done = () => { btn.innerHTML = d.copied; btn.classList.add('copied');
+    setTimeout(()=>{ btn.innerHTML = d.copyBtn; btn.classList.remove('copied'); }, 2200); };
+  if (navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+  } else fallbackCopy(text, done);
+}
+function fallbackCopy(text, done){
+  const ta = document.createElement('textarea');
+  ta.value = text; document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); } catch(_){}
+  document.body.removeChild(ta); done();
+}
+
+/* ---------- init ---------- */
+applyLang();
+</script>
+<!-- GoatCounter: 「YOUR-CODE」を自分のサイトコードに置き換えてください (README参照) -->
+<script data-goatcounter="https://YOUR-CODE.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
